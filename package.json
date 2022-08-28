@@ -1,0 +1,22 @@
+{
+  "name": "standalonekubernetes",
+  "version": "1.0.0",
+  "description": "The microservice will make a stand alone kubernetes cluster",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdilNehal22/standaloneKubernetes.git"
+  },
+  "author": "Adil Nehal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AdilNehal22/standaloneKubernetes/issues"
+  },
+  "homepage": "https://github.com/AdilNehal22/standaloneKubernetes#readme",
+  "dependencies": {
+    "chalk": "^5.0.1"
+  }
+}
