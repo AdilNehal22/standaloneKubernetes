@@ -1,5 +1,7 @@
 const { dockerVersionAsState, checkForRootInstallDocker } = require('../helper-services/checkForRoot.js');
 const { enableDockerAddKubeSigningKey, signingKeyResponseAsState } = require('../helper-services/enableDockerKubeKey.js');
+const { addXenialKubeServiceAddKubeadm, kubeadmVersionAsState } = require('../helper-services/addXenialService&kubeadm.js');
+
 
 async function makeKubernetesCluster(){
   try {
@@ -13,6 +15,14 @@ async function makeKubernetesCluster(){
     }
     if(signingKeyResponseAsState == 'OK'){
       console.log('adding xenial kubernetes repositories and installing kubeadm ========================= ');
+      addXenialKubeServiceAddKubeadm();
+    }else{
+      return;
+    }
+    if(kubeadmVersionAsState){
+      console.log('now finally installing kubernetes cluster ========================= ');
+
+    }else{
 
     }
   } catch (error) {
