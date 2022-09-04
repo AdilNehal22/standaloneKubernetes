@@ -1,7 +1,7 @@
-const { mkdir } = require('fs');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
+let isChownId;
 async function initializeKubernetesAddUser(){
   try {
     const initializeKubernetes = await exec('kubeadm init --pod-network-cidr=10.244.0.0/16');
@@ -34,6 +34,8 @@ async function initializeKubernetesAddUser(){
             }
             if(chownId.stdout){
               console.log(`chown-ed id ${chownId.stdout}`);
+              isChownId = true;
+              console.log('fresh kubernetes cluster is setup, NEXT IS TO INSTALL THE CONTAINER NETWORK INTERFACE');
             }
           }
         }
@@ -46,5 +48,5 @@ async function initializeKubernetesAddUser(){
 }
 
 module.exports = {
-  initializeKubernetesAddUser
+  initializeKubernetesAddUser, isChownId
 }
