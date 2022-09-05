@@ -18,7 +18,8 @@ async function enableDockerAddKubeSigningKey(){
         return;
       }
       if(addKubernetesSigningKey.stdout && addKubernetesSigningKey.stdout.trimRight() == "OK"){
-        signingKeyResponse = addKubernetesSigningKey.stdout.trimRight();
+        signingKeyResponseAsState = addKubernetesSigningKey.stdout.trimRight();
+        console.log('signingKeyResponseAsState in actual function =============== ', addKubernetesSigningKey.stdout.trimRight());
         console.log('Kubernetes signing key added');
       }
     }

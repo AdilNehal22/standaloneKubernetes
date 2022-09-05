@@ -12,9 +12,14 @@ const { installingClusterCNI, isCNIinstalledAsState } = require('../helper-servi
 async function makeKubernetesCluster(){
   try {
     console.log('Checking if the user is ROOT and installing docker ========================= ');
-    await checkForRootInstallDocker();
-    // if(dockerVersionAsState != null){
-    //   console.log('dockerVersionAsState', dockerVersionAsState);
+    await checkForRootInstallDocker()
+    if(dockerVersionAsState){
+      console.log('enabling docker in system and adding kubernetes signing key ========================= ');
+      await enableDockerAddKubeSigningKey();
+    }
+    // console.log(dockerVersionAsState)
+    // if(dockerVersionAsState){
+    //   console.log('dockerVersionAsState ========== ', dockerVersionAsState);
     //   console.log('enabling docker in system and adding kubernetes signing key ========================= ');
     //   await enableDockerAddKubeSigningKey();
     // }

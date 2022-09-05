@@ -1,7 +1,7 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-let dockerVersionAsState;
+var dockerVersionAsState;
 async function checkForRootInstallDocker(){
 	try {
 		const checkForRoot = await exec(`whoami`);
@@ -22,7 +22,9 @@ async function checkForRootInstallDocker(){
 				}
 				if(checkDocker.stdout){
 					dockerVersionAsState = checkDocker.stdout.trimRight();
+					console.log('docker state in actual func =================', dockerVersionAsState)
 					console.log(`Docker installed successfully ${checkDocker.stdout}`);
+					return;
 				}
 			}
 
