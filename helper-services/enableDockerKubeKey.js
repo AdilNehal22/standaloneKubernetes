@@ -11,10 +11,7 @@ async function enableDockerAddKubeSigningKey(){
       return;
     }
     if(enableDocker.stdout){
-      enableDocker.stdout.on('data', function(data){
-        console.log('enabling docker in the system');
-      });
-
+      console.log('enabling docker in the system', enableDocker.stdout);
       const addKubernetesSigningKey = await exec('curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add');
       if(addKubernetesSigningKey.stderr){
         console.log('error while adding kubernetes signing key');

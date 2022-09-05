@@ -10,27 +10,29 @@ async function checkForRootInstallDocker(){
 			return;
 		}
 		if(checkForRoot.stdout && checkForRoot.stdout.trimRight() == "root"){
+			console.log('before command docker install')
 			const installDocker = await exec('apt-get install -y docker.io');
+			if(installDocker.stdout){
+				console.log('docker installing',installDocker.stdout)
+				
+				const checkDocker = await exec('docker --version');
+				if(checkDocker.stderr){
+					console.log(`Docker not installed ${checkDocker.stderr}`);
+					return;
+				}
+				if(checkDocker.stdout){
+					dockerVersionAsState = checkDocker.stdout.trimRight();
+					console.log(`Docker installed successfully ${checkDocker.stdout}`);
+				}
+			}
+
 			if(installDocker.stderr){
-				stderr.on('data', function(data){
+				installDocker.stderr.on('data', function(data){
 					console.log(`error in installing docker ${data.toString()}`);
 					return;
 				});
 			}
-			if(installDocker.stdout){
-				stdout.on('data', function(data){
-					console.log(`installing docker ${data.toString()}`);
-				});
-			}
-			const checkDocker = await exec('docker --version');
-			if(checkDocker.stderr){
-				console.log(`Docker not installed ${stderr}`);
-				return;
-			}
-			if(checkDocker.stdout){
-				dockerVersionAsState = checkDocker.stdout.trimRight();
-				console.log(`Docker installed successfully ${stdout}`);
-			}
+			
 		}else {
 			console.log('This service will only run when user will run it as a root user');
 			return;

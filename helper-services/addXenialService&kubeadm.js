@@ -4,26 +4,19 @@ const exec = util.promisify(require('child_process').exec);
 let kubeadmVersionAsState;
 async function addXenialKubeServiceAddKubeadm(){
   try {
-    const addXenialKubernetesRep = await exec('apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main');
+    const addXenialKubernetesRep = await exec('apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"');
     if(addXenialKubernetesRep.stderr){
-      addXenialKubernetesRep.stderr.on('data', function(data){
-        console.log(`failed to add xenial kubernetes repository ${data.toString()}`);
-        return;
-      });
+      console.log(`failed to add xenial kubernetes repository ${addXenialKubernetesRep.stderr}`);
     }
     if(addXenialKubernetesRep.stdout){
-      addXenialKubernetesRep.stdout.on('data', function(data){
-        console.log(`adding xenial kubernetes repository ${data.toString()}`);
-      });
-      const installKubeadm = await exec('apt install kubeadm');
+      console.log(`adding xenial kubernetes repository ${addXenialKubernetesRep.stdout}`)
+      const installKubeadm = await exec('apt install -y kubeadm');
       if(installKubeadm.stderr){
         console.log(`error while installing kubeadm ${installKubeadm.stderr}`);
         return;
       }
       if(installKubeadm.stdout){
-        installKubeadm.stdout.on('data', function(data){
-          console.log(`installing kubernetes ${data.toString()}`);
-        });
+        console.log(`installing kubeadm ${installKubeadm.stdout}`)
         const checkKubeadm = await exec('kubeadm version');
         if(checkKubeadm.stderr){
           console.log(`kubeadm not installed ${checkKubeadm.stderr}`);
@@ -36,7 +29,7 @@ async function addXenialKubeServiceAddKubeadm(){
       }
     }
   } catch (error) {
-    console.log(`error while adding xenial kubernetes repositories and installing kubeadm`);
+    console.log(`error while adding xenial kubernetes repositories and installing kubeadm ${error}`);
   }
 }
 

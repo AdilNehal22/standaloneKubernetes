@@ -2,7 +2,7 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const readline = require('readline');
 
-const readline = readline.createInterface({
+const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
@@ -12,12 +12,12 @@ let isCNIinstalledAsState;
 
 async function installingClusterCNI(){
   try {
-    readline.question("Which CNI do you want to install on your Kubernetes cluster CALICO or FLANNEL?", function(answer){
+    rl.question("Which CNI do you want to install on your Kubernetes cluster CALICO or FLANNEL?", function(answer){
       CNI = answer;
       console.log(`will install ${answer} for cluster`);
-      readline.close()
+      rl.close()
     });
-    readline.on('close', function(){
+    rl.on('close', function(){
       console.log(`installing ${CNI}`);
       process.exit(0);
     });
@@ -32,7 +32,7 @@ async function installingClusterCNI(){
           });
         }
         if(addCalico.stdout){
-          addCalico.stdout.on('data', function(data){
+          addCalico.stdout.on('data', async function(data){
             console.log('adding calico tigera operator', data.toString());
             const addCalicoCustomResource = await exec('kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/custom-resources.yaml');
             if(addCalicoCustomResource.stderr){

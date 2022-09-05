@@ -12,7 +12,7 @@ async function initializeKubernetesAddUser(){
       });
     }
     if(initializeKubernetes.stdout){
-      initializeKubernetes.stdout.on('data', function(data){
+      initializeKubernetes.stdout.on('data', async function(data){
         console.log(`intializing kubernetes ${data.toString()}`);
         let makeDir = await exec('mkdir -p $HOME/.kube');
         if(makeDir.stderr){

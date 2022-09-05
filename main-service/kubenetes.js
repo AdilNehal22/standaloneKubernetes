@@ -11,7 +11,28 @@ const { installingClusterCNI, isCNIinstalledAsState } = require('../helper-servi
 
 async function makeKubernetesCluster(){
   try {
-
+    console.log('Checking if the user is ROOT and installing docker ========================= ');
+    await checkForRootInstallDocker();
+    // if(dockerVersionAsState != null){
+    //   console.log('dockerVersionAsState', dockerVersionAsState);
+    //   console.log('enabling docker in system and adding kubernetes signing key ========================= ');
+    //   await enableDockerAddKubeSigningKey();
+    // }
+    // console.log('adding xenial kubernetes repositories and installing kubeadm ========================= ');
+    // await addXenialKubeServiceAddKubeadm();
+    // console.log('naming the nodes ========================= ');
+    // await namingMasterNode();
+    // console.log("initializing the kubernetes cluster and setting regualr user ========================= ");
+    // await initializeKubernetesAddUser();
+    // console.log("installing CONTAINER NETWORK INTERFACE, on your input ========================= ");
+    // await installingClusterCNI()
+    // const checkPods = await exec('kubectl get pods --all-namespaces');
+    // if(checkPods.stderr){
+    //   console.log('error while showing pods', checkPods.stderr);
+    // }
+    // if(checkPods.stdout){
+    //   console.log(checkPods.stdout);
+    // }
   } catch (error) {
     console.log(`error while installing kubernetes cluster ${error}`);
   }
