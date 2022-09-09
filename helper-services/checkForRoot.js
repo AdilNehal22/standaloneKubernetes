@@ -1,7 +1,7 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-var dockerVersionAsState;
+let dockerVersionAsState;
 async function checkForRootInstallDocker(){
 	try {
 		const checkForRoot = await exec(`whoami`);
@@ -24,7 +24,6 @@ async function checkForRootInstallDocker(){
 					dockerVersionAsState = checkDocker.stdout.trimRight();
 					console.log('docker state in actual func =================', dockerVersionAsState)
 					console.log(`Docker installed successfully ${checkDocker.stdout}`);
-					return;
 				}
 			}
 
@@ -39,6 +38,8 @@ async function checkForRootInstallDocker(){
 			console.log('This service will only run when user will run it as a root user');
 			return;
 		}
+		console.log('docker state in actual func 2 =================', dockerVersionAsState)
+		return dockerVersionAsState
 	} catch (error) {
 		console.log(`error while checking for root user and installing docker ${error}`);
 		return;

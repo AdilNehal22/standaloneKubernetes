@@ -5,16 +5,19 @@ let signingKeyResponseAsState;
 
 async function enableDockerAddKubeSigningKey(){
   try {
+    console.log('executing ====================== systemctl enable docker')
     const enableDocker = await exec('systemctl enable docker');
-    if(enableDocker.stderr){
-      console.log(`stderr in enabling docker ${stderr}`);
+    if(enableDocker.stderr !== ""){
+      console.log(`stderr in enabling docker ${enableDocker.stderr}`);
       return;
     }
-    if(enableDocker.stdout){
+    if(enableDocker.stdout === ""){
       console.log('enabling docker in the system', enableDocker.stdout);
-      const addKubernetesSigningKey = await exec('curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add');
-      if(addKubernetesSigningKey.stderr){
-        console.log('error while adding kubernetes signing key');
+      console.log(`executing ====================== curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add}`)
+      const addKubernetesSigningKey = await exec('curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add');
+      console.log('addKubernetesSigningKey', addKubernetesSigningKey)
+      if(!addKubernetesSigningKey.stderr.startsWith('Warning')){
+        console.log('error while adding kubernetes signing key', addKubernetesSigningKey.stderr);
         return;
       }
       if(addKubernetesSigningKey.stdout && addKubernetesSigningKey.stdout.trimRight() == "OK"){
@@ -23,6 +26,7 @@ async function enableDockerAddKubeSigningKey(){
         console.log('Kubernetes signing key added');
       }
     }
+    return signingKeyResponseAsState;
   } catch (error) {
     console.log(`error while enabling docker and adding kubernetes signing key ${error}`);
     return;

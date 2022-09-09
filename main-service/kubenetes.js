@@ -1,8 +1,8 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-const { dockerVersionAsState, checkForRootInstallDocker } = require('../helper-services/checkForRoot.js');
-const { enableDockerAddKubeSigningKey, signingKeyResponseAsState } = require('../helper-services/enableDockerKubeKey.js');
+const { checkForRootInstallDocker } = require('../helper-services/checkForRoot.js');
+const { enableDockerAddKubeSigningKey } = require('../helper-services/enableDockerKubeKey.js');
 const { addXenialKubeServiceAddKubeadm, kubeadmVersionAsState } = require('../helper-services/addXenialService&kubeadm.js');
 const { namingMasterNode, nodeNamed } = require('../helper-services/namingNode.js');
 const { initializeKubernetesAddUser, isChownId } = require('../helper-services/initializingKubernetes.js');
@@ -12,12 +12,13 @@ const { installingClusterCNI, isCNIinstalledAsState } = require('../helper-servi
 async function makeKubernetesCluster(){
   try {
     console.log('Checking if the user is ROOT and installing docker ========================= ');
-    await checkForRootInstallDocker()
+    const dockerVersionAsState = await checkForRootInstallDocker()
+    console.log('in caller', dockerVersionAsState)
     if(dockerVersionAsState){
       console.log('enabling docker in system and adding kubernetes signing key ========================= ');
-      await enableDockerAddKubeSigningKey();
+      let signingKeyResponseAsState = await enableDockerAddKubeSigningKey();
     }
-    // console.log(dockerVersionAsState)
+    console.log(signingKeyResponseAsState)
     // if(dockerVersionAsState){
     //   console.log('dockerVersionAsState ========== ', dockerVersionAsState);
     //   console.log('enabling docker in system and adding kubernetes signing key ========================= ');
