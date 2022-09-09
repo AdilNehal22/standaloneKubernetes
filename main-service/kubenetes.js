@@ -3,31 +3,36 @@ const exec = util.promisify(require('child_process').exec);
 
 const { checkForRootInstallDocker } = require('../helper-services/checkForRoot.js');
 const { enableDockerAddKubeSigningKey } = require('../helper-services/enableDockerKubeKey.js');
-const { addXenialKubeServiceAddKubeadm, kubeadmVersionAsState } = require('../helper-services/addXenialService&kubeadm.js');
-const { namingMasterNode, nodeNamed } = require('../helper-services/namingNode.js');
+const { addXenialKubeServiceAddKubeadm } = require('../helper-services/addXenialService&kubeadm.js');
+const { namingMasterNode } = require('../helper-services/namingNode.js');
 const { initializeKubernetesAddUser, isChownId } = require('../helper-services/initializingKubernetes.js');
 const { installingClusterCNI, isCNIinstalledAsState } = require('../helper-services/installingCNI');
 
+let dockerVersionAsState;
+let signingKeyResponseAsState;
+let kubeadmVersionAsState;
+let nodeNamed;
 
 async function makeKubernetesCluster(){
   try {
     console.log('Checking if the user is ROOT and installing docker ========================= ');
-    const dockerVersionAsState = await checkForRootInstallDocker()
-    console.log('in caller', dockerVersionAsState)
+    dockerVersionAsState = await checkForRootInstallDocker()
+    // console.log('in caller', dockerVersionAsState)
     if(dockerVersionAsState){
       console.log('enabling docker in system and adding kubernetes signing key ========================= ');
-      let signingKeyResponseAsState = await enableDockerAddKubeSigningKey();
+      signingKeyResponseAsState = await enableDockerAddKubeSigningKey();
     }
     console.log(signingKeyResponseAsState)
-    // if(dockerVersionAsState){
-    //   console.log('dockerVersionAsState ========== ', dockerVersionAsState);
-    //   console.log('enabling docker in system and adding kubernetes signing key ========================= ');
-    //   await enableDockerAddKubeSigningKey();
-    // }
-    // console.log('adding xenial kubernetes repositories and installing kubeadm ========================= ');
-    // await addXenialKubeServiceAddKubeadm();
-    // console.log('naming the nodes ========================= ');
-    // await namingMasterNode();
+    if(signingKeyResponseAsState == 'OK'){
+      console.log('adding xenial kubernetes repositories and installing kubeadm ========================= ');
+      kubeadmVersionAsState = await addXenialKubeServiceAddKubeadm();
+    }
+    console.log(kubeadmVersionAsState)
+    if(kubeadmVersionAsState){
+      console.log('naming the nodes ========================= ');
+      nodeNamed = await namingMasterNode();
+    }
+    console.log(nodeNamed)
     // console.log("initializing the kubernetes cluster and setting regualr user ========================= ");
     // await initializeKubernetesAddUser();
     // console.log("installing CONTAINER NETWORK INTERFACE, on your input ========================= ");
