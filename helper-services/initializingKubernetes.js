@@ -41,6 +41,7 @@ async function initializeKubernetesAddUser(){
         }
       });
     }
+    return isChownId;
   } catch (error) {
     console.log(`error while initializing and adding regular user ${error}`);
   }
