@@ -38,5 +38,5 @@ async function addXenialKubeServiceAddKubeadm(){
 }
 
 module.exports = {
-  addXenialKubeServiceAddKubeadm, kubeadmVersionAsState
+  addXenialKubeServiceAddKubeadm
 }

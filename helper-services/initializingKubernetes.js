@@ -54,5 +54,5 @@ async function initializeKubernetesAddUser(){
 }
 
 module.exports = {
-  initializeKubernetesAddUser, isChownId
+  initializeKubernetesAddUser
 }

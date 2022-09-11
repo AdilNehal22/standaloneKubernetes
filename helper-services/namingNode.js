@@ -30,5 +30,5 @@ async function namingMasterNode(){
 }
 
 module.exports = {
-  namingMasterNode, nodeNamed
+  namingMasterNode
 }

@@ -33,4 +33,4 @@ async function enableDockerAddKubeSigningKey(){
   }
 }
 
-module.exports = {enableDockerAddKubeSigningKey, signingKeyResponseAsState};
+module.exports = {enableDockerAddKubeSigningKey};
