@@ -1,65 +1,61 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-const readline = require('readline');
+var readline = require('readline');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
 
 let CNI;
 let isCNIinstalledAsState;
 
-async function installingClusterCNI(){
+async function takeUserCNIAndInstall(){
   try {
-    rl.question("Which CNI do you want to install on your Kubernetes cluster CALICO or FLANNEL?", function(answer){
+    var rl = readline.createInterface(process.stdin, process.stdout)
+
+    rl.question("Which CNI do you want to install on your Kubernetes cluster CALICO or FLANNEL?", (answer) => {
       CNI = answer;
       console.log(`will install ${answer} for cluster`);
       rl.close()
     });
-    rl.on('close', function(){
+    rl.on('close', () => {
       console.log(`installing ${CNI}`);
-      process.exit(0);
+      isCNIinstalledAsState = await installingClusterCNI(CNI);
     });
+    return isCNIinstalledAsState;
+  } catch (error) {
+    console.log('error while taking user input for CNI', error)
+  }
+}
 
-    switch(CNI){
+
+async function installingClusterCNI(userCNI){
+  try {
+    switch(userCNI){
       case "CALICO":
         const addCalico = await exec('kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml');
         if(addCalico.stderr){
-          console.log('error while installing calico tigera operator', data.toString());
+          console.log('error while installing calico tigera operator', addCalico.stderr);
           return;
         }
         if(addCalico.stdout){
-          addCalico.stdout.on('data', async function(data){
-            console.log('adding calico tigera operator', data.toString());
-            const addCalicoCustomResource = await exec('kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/custom-resources.yaml');
-            if(addCalicoCustomResource.stderr){
-              addCalicoCustomResource.stderr.on('data', function(data){
-                console.log('error while installing calico custom resource', data.toString());
-                return;
-              });
-            }
-            if(addCalico.stdout){
-              addCalico.stdout.on('data', function(data){
-                console.log('installed calico custom resource', data.toString());
-              });
-              isCNIinstalledAsState = true;
-            }
-          })
+          console.log('adding calico tigera operator', addCalico.stdout);
+          const addCalicoCustomResource = await exec('kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/custom-resources.yaml');
+          if(addCalicoCustomResource.stderr){
+            console.log('error while installing calico custom resource', addCalicoCustomResource.stderr);
+            return;
+          }
+          if(addCalico.stdout){
+            console.log('installed calico custom resource', addCalico.stdout);
+            isCNIinstalledAsState = true;
+          }
         }
         break;
       case "FLANNEL":
         const addFlannel = await exec('sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml');
         if(addFlannel.stderr){
-          addFlannel.stderr.on('data', function(data){
-            console.log('error while installing flannel', data.toString());
-            return;
-          });
+          console.log('error while installing flannel', addFlannel.stderr);
+          return;
         }
         if(addFlannel.stdout){
-          addFlannel.stdout.on('data', function(data){
-            console.log('installed flannel', data.toString());
-          });
+          console.log('installed flannel', addFlannel.stdout);
           isCNIinstalledAsState = true;
         }
         break;
@@ -67,11 +63,12 @@ async function installingClusterCNI(){
         console.log(`consoling the CNI ${CNI}, it is not installed`);
         break;
     }
+    return isCNIinstalledAsState;
   } catch (error) {
     console.log(`error while installing the Container Network Interface ${error}`);
   }
 }
 
 module.exports = {
-  installingClusterCNI, isCNIinstalledAsState
+  takeUserCNIAndInstall
 }

@@ -6,13 +6,14 @@ const { enableDockerAddKubeSigningKey } = require('../helper-services/enableDock
 const { addXenialKubeServiceAddKubeadm } = require('../helper-services/addXenialService&kubeadm.js');
 const { namingMasterNode } = require('../helper-services/namingNode.js');
 const { initializeKubernetesAddUser } = require('../helper-services/initializingKubernetes.js');
-const { installingClusterCNI, isCNIinstalledAsState } = require('../helper-services/installingCNI');
+const { takeUserCNIAndInstall } = require('../helper-services/installingCNI');
 
 let dockerVersionAsState;
 let signingKeyResponseAsState;
 let kubeadmVersionAsState;
 let nodeNamed;
 let isChownId;
+let isCNIinstalledAsState;
 
 async function makeKubernetesCluster(){
   try {
@@ -39,12 +40,12 @@ async function makeKubernetesCluster(){
       // console.log("initializing the kubernetes cluster and setting regualr user ========================= ");
       // isChownId = await initializeKubernetesAddUser();
     // }
-    console.log(isChownId)
-    if(isChownId){
-      console.log("installing CONTAINER NETWORK INTERFACE, on your input ========================= ");
-      await installingClusterCNI();
-    }
 
+    // if(isChownId){
+      console.log("installing CONTAINER NETWORK INTERFACE, on your input ========================= ");
+      await takeUserCNIAndInstall();
+    // }
+    // console.log(isCNIinstalledAsState)
     // const checkPods = await exec('kubectl get pods --all-namespaces');
     // if(checkPods.stderr){
     //   console.log('error while showing pods', checkPods.stderr);
