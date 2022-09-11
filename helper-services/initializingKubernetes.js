@@ -16,28 +16,28 @@ async function initializeKubernetesAddUser(){
       console.log('executing =================== mkdir -p $HOME/.kube')
       let makeDir = await exec('mkdir -p $HOME/.kube');
       console.log(`makeDir ${JSON.stringify(makeDir)}`)
-      if(makeDir.stderr){
+      if(makeDir.stderr !== ""){
         console.log(`error while making dir $HOME/.kube ${makeDir.stderr}`);
       }
-      if(makeDir.stdout){
+      if(makeDir.stdout === ""){
         console.log(`make dir $HOME/.kube ${makeDir.stdout}`)
         console.log('executing =================== yes | cp -i /etc/kubernetes/admin.conf $HOME/.kube/config')
         const copyKubeConfig = await exec('yes | cp -i /etc/kubernetes/admin.conf $HOME/.kube/config');
         console.log(`copyKubeConfig ${copyKubeConfig}`)
-        if(copyKubeConfig.stderr){
+        if(copyKubeConfig.stderr !== ""){
           console.log(`error while copying kube config ${copyKubeConfig.stderr}`);
           return;
         }
-        if(copyKubeConfig.stdout){
+        if(copyKubeConfig.stdout === ""){
           console.log(`copied kube config ${copyKubeConfig.stdout}`);
           console.log('executing =================== chown $(id -u):$(id -g) $HOME/.kube/config')
           const chownId = await exec('chown $(id -u):$(id -g) $HOME/.kube/config');
           console.log('chownId', chownId)
-          if(chownId.stderr){
+          if(chownId.stderr !== ""){
             console.log(`error while chown id ${chownId.stderr}`);
             return;
           }
-          if(chownId.stdout){
+          if(chownId.stdout === ""){
             console.log(`chown-ed id ${chownId.stdout}`);
             isChownId = true;
             console.log('fresh kubernetes cluster is setup, NEXT IS TO INSTALL THE CONTAINER NETWORK INTERFACE');

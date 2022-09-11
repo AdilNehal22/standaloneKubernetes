@@ -16,32 +16,35 @@ let isChownId;
 
 async function makeKubernetesCluster(){
   try {
-    console.log('Checking if the user is ROOT and installing docker ========================= ');
+    // console.log('Checking if the user is ROOT and installing docker ========================= ');
 
-    dockerVersionAsState = await checkForRootInstallDocker()
+    // dockerVersionAsState = await checkForRootInstallDocker()
 
-    if(dockerVersionAsState){
-      console.log('enabling docker in system and adding kubernetes signing key ========================= ');
-      signingKeyResponseAsState = await enableDockerAddKubeSigningKey();
-    }
+    // if(dockerVersionAsState){
+    //   console.log('enabling docker in system and adding kubernetes signing key ========================= ');
+    //   signingKeyResponseAsState = await enableDockerAddKubeSigningKey();
+    // }
 
-    if(signingKeyResponseAsState == 'OK'){
-      console.log('adding xenial kubernetes repositories and installing kubeadm ========================= ');
-      kubeadmVersionAsState = await addXenialKubeServiceAddKubeadm();
-    }
+    // if(signingKeyResponseAsState == 'OK'){
+    //   console.log('adding xenial kubernetes repositories and installing kubeadm ========================= ');
+    //   kubeadmVersionAsState = await addXenialKubeServiceAddKubeadm();
+    // }
 
-    if(kubeadmVersionAsState){
-      console.log('naming the nodes ========================= ');
-      nodeNamed = await namingMasterNode();
-    }
+    // if(kubeadmVersionAsState){
+    //   console.log('naming the nodes ========================= ');
+    //   nodeNamed = await namingMasterNode();
+    // }
 
-    if(nodeNamed){
-      console.log("initializing the kubernetes cluster and setting regualr user ========================= ");
-      isChownId = await initializeKubernetesAddUser();
-    }
+    // if(nodeNamed){
+      // console.log("initializing the kubernetes cluster and setting regualr user ========================= ");
+      // isChownId = await initializeKubernetesAddUser();
+    // }
     console.log(isChownId)
-    // console.log("installing CONTAINER NETWORK INTERFACE, on your input ========================= ");
-    // await installingClusterCNI()
+    if(isChownId){
+      console.log("installing CONTAINER NETWORK INTERFACE, on your input ========================= ");
+      await installingClusterCNI();
+    }
+
     // const checkPods = await exec('kubectl get pods --all-namespaces');
     // if(checkPods.stderr){
     //   console.log('error while showing pods', checkPods.stderr);

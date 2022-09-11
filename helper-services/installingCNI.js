@@ -26,10 +26,8 @@ async function installingClusterCNI(){
       case "CALICO":
         const addCalico = await exec('kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml');
         if(addCalico.stderr){
-          addCalico.stderr.on('data', function(data){
-            console.log('error while installing calico tigera operator', data.toString());
-            return;
-          });
+          console.log('error while installing calico tigera operator', data.toString());
+          return;
         }
         if(addCalico.stdout){
           addCalico.stdout.on('data', async function(data){
