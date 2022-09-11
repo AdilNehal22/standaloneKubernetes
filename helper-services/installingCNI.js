@@ -15,7 +15,7 @@ async function takeUserCNIAndInstall(){
       console.log(`will install ${answer} for cluster`);
       rl.close()
     });
-    rl.on('close', () => {
+    rl.on('close', async () => {
       console.log(`installing ${CNI}`);
       isCNIinstalledAsState = await installingClusterCNI(CNI);
     });
@@ -24,7 +24,6 @@ async function takeUserCNIAndInstall(){
     console.log('error while taking user input for CNI', error)
   }
 }
-
 
 async function installingClusterCNI(userCNI){
   try {
