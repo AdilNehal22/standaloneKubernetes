@@ -45,28 +45,30 @@ async function makeKubernetesCluster(){
       console.log("installing CONTAINER NETWORK INTERFACE, on your input ========================= ");
       isCNIinstalledAsState = await takeUserCNIAndInstall();
     }
-    console.log(isCNIinstalledAsState)
-    const checkPods = await exec('kubectl get pods --all-namespaces');
-    if(checkPods.stderr){
-      console.log('error while showing pods', checkPods.stderr);
-    }
-    if(checkPods.stdout){
-      console.log('Cluster Finally installed +++++++++++++++++++++++++++++++++++++++ ',checkPods.stdout, '\nTainiting nodes ++++++++++++++++++++++ ');
-      const taintMaster = await exec('kubectl taint nodes --all node-role.kubernetes.io/master-');
-      if(taintMaster.stderr){
-        console.log(taintMaster.stderr);
+
+    if(isCNIinstalledAsState){
+      const checkPods = await exec('kubectl get pods --all-namespaces');
+      if(checkPods.stderr){
+        console.log('error while showing pods', checkPods.stderr);
       }
-      if(taintMaster.stdout){
-        console.log(taintMaster.stdout);
-      }
-      const taintNoScheduler = await exec('kubectl taint nodes --all node.kubernetes.io/not-ready:NoSchedule-');
-      if(taintNoScheduler.stderr){
-        console.log(taintNoScheduler.stderr);
-        return;
-      }
-      if(taintNoScheduler.stdout){
-        console.log(taintNoScheduler.stdout);
-        return;
+      if(checkPods.stdout){
+        console.log('Cluster Finally installed +++++++++++++++++++++++++++++++++++++++ ',checkPods.stdout, '\nTainiting nodes ++++++++++++++++++++++ ');
+        const taintMaster = await exec('kubectl taint nodes --all node-role.kubernetes.io/master-');
+        if(taintMaster.stderr){
+          console.log(taintMaster.stderr);
+        }
+        if(taintMaster.stdout){
+          console.log(taintMaster.stdout);
+        }
+        const taintNoScheduler = await exec('kubectl taint nodes --all node.kubernetes.io/not-ready:NoSchedule-');
+        if(taintNoScheduler.stderr){
+          console.log(taintNoScheduler.stderr);
+          return;
+        }
+        if(taintNoScheduler.stdout){
+          console.log(taintNoScheduler.stdout);
+          return;
+        }
       }
     }
   } catch (error) {
