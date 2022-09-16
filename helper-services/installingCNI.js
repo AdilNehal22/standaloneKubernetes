@@ -1,10 +1,10 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 var readline = require('readline');
+const { finallyCheckPods } = require('../helper-services/checkPods.js')
 
 
 let CNI;
-let isCNIinstalledAsState;
 
 async function takeUserCNIAndInstall(){
   try {
@@ -17,9 +17,8 @@ async function takeUserCNIAndInstall(){
     });
     rl.on('close', async () => {
       console.log(`installing ${CNI}`);
-      isCNIinstalledAsState = await installingClusterCNI(CNI);
+      await installingClusterCNI(CNI);
     });
-    return isCNIinstalledAsState;
   } catch (error) {
     console.log('error while taking user input for CNI', error)
   }
@@ -41,9 +40,8 @@ async function installingClusterCNI(userCNI){
             console.log('error while installing calico custom resource', addCalicoCustomResource.stderr);
             return;
           }
-          if(addCalico.stdout){
-            console.log('installed calico custom resource', addCalico.stdout);
-            isCNIinstalledAsState = true;
+          if(addCalicoCustomResource.stdout){
+            console.log('installed calico custom resource', addCalicoCustomResource.stdout);
           }
         }
         break;
@@ -55,14 +53,12 @@ async function installingClusterCNI(userCNI){
         }
         if(addFlannel.stdout){
           console.log('installed flannel', addFlannel.stdout);
-          isCNIinstalledAsState = true;
         }
         break;
       default:
         console.log(`consoling the CNI ${CNI}, it is not installed`);
         break;
     }
-    return isCNIinstalledAsState;
   } catch (error) {
     console.log(`error while installing the Container Network Interface ${error}`);
   }

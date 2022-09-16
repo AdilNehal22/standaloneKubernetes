@@ -7,13 +7,13 @@ const { addXenialKubeServiceAddKubeadm } = require('../helper-services/addXenial
 const { namingMasterNode } = require('../helper-services/namingNode.js');
 const { initializeKubernetesAddUser } = require('../helper-services/initializingKubernetes.js');
 const { takeUserCNIAndInstall } = require('../helper-services/installingCNI');
+const { finallyCheckPods } = require('../helper-services/checkPods.js')
 
 let dockerVersionAsState;
 let signingKeyResponseAsState;
 let kubeadmVersionAsState;
 let nodeNamed;
 let isChownId;
-let isCNIinstalledAsState;
 
 async function makeKubernetesCluster(){
   try {
@@ -43,33 +43,8 @@ async function makeKubernetesCluster(){
 
     if(isChownId){
       console.log("installing CONTAINER NETWORK INTERFACE, on your input ========================= ");
-      isCNIinstalledAsState = await takeUserCNIAndInstall();
-    }
-
-    if(isCNIinstalledAsState){
-      const checkPods = await exec('kubectl get pods --all-namespaces');
-      if(checkPods.stderr){
-        console.log('error while showing pods', checkPods.stderr);
-      }
-      if(checkPods.stdout){
-        console.log('Cluster Finally installed +++++++++++++++++++++++++++++++++++++++ ',checkPods.stdout, '\nTainiting nodes ++++++++++++++++++++++ ');
-        const taintMaster = await exec('kubectl taint nodes --all node-role.kubernetes.io/master-');
-        if(taintMaster.stderr){
-          console.log(taintMaster.stderr);
-        }
-        if(taintMaster.stdout){
-          console.log(taintMaster.stdout);
-        }
-        const taintNoScheduler = await exec('kubectl taint nodes --all node.kubernetes.io/not-ready:NoSchedule-');
-        if(taintNoScheduler.stderr){
-          console.log(taintNoScheduler.stderr);
-          return;
-        }
-        if(taintNoScheduler.stdout){
-          console.log(taintNoScheduler.stdout);
-          return;
-        }
-      }
+      await takeUserCNIAndInstall();
+      await finallyCheckPods();
     }
   } catch (error) {
     console.log(`error while installing kubernetes cluster ${error}`);
