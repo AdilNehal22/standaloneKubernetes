@@ -1,24 +1,27 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-var readline = require('readline');
-const { finallyCheckPods } = require('../helper-services/checkPods.js')
+var readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
 
-let CNI;
+let installedCNIStdout;
+let stdoutInstalledCNI;
+
+function question(query) {
+  return new Promise(resolve => {
+    readline.question(query, resolve);
+  });
+}
 
 async function takeUserCNIAndInstall(){
   try {
-    var rl = readline.createInterface(process.stdin, process.stdout)
+    const CNI = await question('Which CNI do you want to install on your Kubernetes cluster CALICO or FLANNEL? ');
+    console.log(`installing ${CNI}`);
+    stdoutInstalledCNI = await installingClusterCNI(CNI);
+    return stdoutInstalledCNI
 
-    rl.question("Which CNI do you want to install on your Kubernetes cluster CALICO or FLANNEL?", (answer) => {
-      CNI = answer;
-      console.log(`will install ${answer} for cluster`);
-      rl.close()
-    });
-    rl.on('close', async () => {
-      console.log(`installing ${CNI}`);
-      await installingClusterCNI(CNI);
-    });
   } catch (error) {
     console.log('error while taking user input for CNI', error)
   }
@@ -41,7 +44,9 @@ async function installingClusterCNI(userCNI){
             return;
           }
           if(addCalicoCustomResource.stdout){
-            console.log('installed calico custom resource', addCalicoCustomResource.stdout);
+            installedCNIStdout = addCalicoCustomResource.stdout;
+            console.log('installed calico custom resource', installedCNIStdout);
+            return installedCNIStdout
           }
         }
         break;
@@ -52,7 +57,9 @@ async function installingClusterCNI(userCNI){
           return;
         }
         if(addFlannel.stdout){
-          console.log('installed flannel', addFlannel.stdout);
+          installedCNIStdout = addFlannel.stdout;
+          console.log('installed flannel', installedCNIStdout);
+          return installedCNIStdout;
         }
         break;
       default:

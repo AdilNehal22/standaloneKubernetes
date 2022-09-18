@@ -14,6 +14,7 @@ let signingKeyResponseAsState;
 let kubeadmVersionAsState;
 let nodeNamed;
 let isChownId;
+let isCNIinstalled;
 
 async function makeKubernetesCluster(){
   try {
@@ -43,9 +44,14 @@ async function makeKubernetesCluster(){
 
     if(isChownId){
       console.log("installing CONTAINER NETWORK INTERFACE, on your input ========================= ");
-      await takeUserCNIAndInstall();
+      isCNIinstalled = await takeUserCNIAndInstall();
+    }
+
+    if(isCNIinstalled){
+      console.log('finally checking for the pods ========================= ');
       await finallyCheckPods();
     }
+
   } catch (error) {
     console.log(`error while installing kubernetes cluster ${error}`);
   }
