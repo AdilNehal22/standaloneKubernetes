@@ -20,8 +20,8 @@ async function takeUserCNIAndInstall(){
     const CNI = await question('Which CNI do you want to install on your Kubernetes cluster CALICO or FLANNEL? ');
     console.log(`installing ${CNI}`);
     stdoutInstalledCNI = await installingClusterCNI(CNI);
+    readline.close();
     return stdoutInstalledCNI
-
   } catch (error) {
     console.log('error while taking user input for CNI', error)
   }

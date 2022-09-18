@@ -1,13 +1,10 @@
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-
 const { checkForRootInstallDocker } = require('../helper-services/checkForRoot.js');
 const { enableDockerAddKubeSigningKey } = require('../helper-services/enableDockerKubeKey.js');
 const { addXenialKubeServiceAddKubeadm } = require('../helper-services/addXenialService&kubeadm.js');
 const { namingMasterNode } = require('../helper-services/namingNode.js');
 const { initializeKubernetesAddUser } = require('../helper-services/initializingKubernetes.js');
 const { takeUserCNIAndInstall } = require('../helper-services/installingCNI');
-const { finallyCheckPods } = require('../helper-services/checkPods.js')
+const { checkPodsAfterAMinute } = require('../helper-services/checkPods.js')
 
 let dockerVersionAsState;
 let signingKeyResponseAsState;
@@ -49,7 +46,8 @@ async function makeKubernetesCluster(){
 
     if(isCNIinstalled){
       console.log('finally checking for the pods ========================= ');
-      await finallyCheckPods();
+      await checkPodsAfterAMinute();
+      return;
     }
 
   } catch (error) {
